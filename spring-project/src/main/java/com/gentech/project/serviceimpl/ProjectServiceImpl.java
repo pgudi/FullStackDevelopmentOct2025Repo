@@ -7,6 +7,9 @@ import com.gentech.project.mapping.ProjectMapping;
 import com.gentech.project.repository.ProjectRepository;
 import com.gentech.project.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,13 +22,23 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectDto createProject(Project project) {
         Project savedProject=repository.save(project);
-
         return ProjectMapping.mapToProjectDto(savedProject);
     }
 
     @Override
     public List<ProjectDto> getAllProjects() {
         return repository.findAll().stream().map((project -> ProjectMapping.mapToProjectDto(project)))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProjectDto> getAllProjects
+            (Integer PageNumber, Integer pageSize) {
+        Pageable pages=PageRequest.of
+                (PageNumber,pageSize, Sort.Direction.ASC,"id");
+        return repository.findAll(pages)
+                .stream().map((project ->
+                        ProjectMapping.mapToProjectDto(project)))
                 .collect(Collectors.toList());
     }
 
@@ -59,4 +72,48 @@ public class ProjectServiceImpl implements ProjectService {
 
         repository.delete(existingProject);
     }
+
+    @Override
+    public List<ProjectDto> getProjectsByProjectTitle(String projectTitle) {
+        return repository.findByProjectTitle(projectTitle).stream().map((project -> ProjectMapping.mapToProjectDto(project)))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean existProjectsByProjectTitle(String projectTitle) {
+        if (repository.existsByProjectTitle(projectTitle)==true){
+           return  true;
+        }else{
+            return  false;
+        }
+    }
+
+    @Override
+    public List<ProjectDto> getProjectsByUsingProjectTitle(String projectTitle) {
+        return repository.getProjectsByUsingProjectTitle(projectTitle).stream().map((project -> ProjectMapping.mapToProjectDto(project)))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Integer updateProjectsByProjectTitle(String domain,String projectTitle) {
+        return repository.updateProjectsByProjectTitle(domain,projectTitle);
+    }
+
+    @Override
+    public Integer deleteProjectsByDescription(String description) {
+        return repository.deleteProjectsByDescription(description);
+    }
+
+    @Override
+    public List<ProjectDto> getProjectsByProjectDomainContaining
+            (String projectDomain, String columnName) {
+        Sort sort = Sort.by(Sort.Direction.ASC, columnName);
+        return repository.
+                findByProjectDomainContaining(projectDomain,sort)
+                .stream().map((project ->
+                        ProjectMapping.mapToProjectDto(project)))
+                .collect(Collectors.toList());
+    }
+
+
 }
