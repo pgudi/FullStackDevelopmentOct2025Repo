@@ -13,11 +13,16 @@ import java.util.List;
 public class DepartmentServiceImpl implements DepartmentService {
 
     private DepartmentRepository repository;
-    public DepartmentServiceImpl(DepartmentRepository repository){
-        this.repository=repository;
+
+    public DepartmentServiceImpl(DepartmentRepository repository) {
+        this.repository = repository;
     }
+
     @Override
-    public Department createDepartment(Department department) {
+    public Department createDepartment(Department department)throws Exception {
+        if (department.getDeptName().length() > 10) {
+            throw new Exception("Department Name should not exceeds more 10 characters!!");
+        }
         return repository.save(department);
     }
 
@@ -28,15 +33,15 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public Department getDepartmentById(Integer id) {
-        Department existingDept=repository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("The Department id "+id+" has not Found"));
+        Department existingDept = repository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("The Department id " + id + " has not Found"));
         return existingDept;
     }
 
     @Override
     public Department updateDepartment(Integer id, Department department) {
-        Department existingDept=repository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("The Department id "+id+" has not Found"));
+        Department existingDept = repository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("The Department id " + id + " has not Found"));
 
         existingDept.setId(id);
         existingDept.setDeptName(department.getDeptName());
@@ -46,8 +51,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public void deleteDepartmentById(Integer id) {
-        Department existingDept=repository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("The Department id "+id+" has not Found"));
+        Department existingDept = repository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("The Department id " + id + " has not Found"));
 
         repository.delete(existingDept);
     }

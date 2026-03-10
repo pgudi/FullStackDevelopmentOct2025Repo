@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -17,7 +18,7 @@ public class DepartmentController {
     private DepartmentService service;
 
     @PostMapping("/departments")
-    public ResponseEntity<Department> saveDepartment(@RequestBody Department department)
+    public ResponseEntity<Department> saveDepartment(@RequestBody Department department)throws Exception
     {
         return new ResponseEntity<>(service.createDepartment(department), HttpStatus.CREATED);
     }
